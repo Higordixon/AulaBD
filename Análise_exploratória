@@ -1,0 +1,92 @@
+#@title **Questão 1 - Cesárea *x* parto normal - idade das mães** { vertical-output: true }
+
+#Comandos Basicos
+#mostra as 5 primeiras linhas e 5 ultimas
+base.head()
+base.head(-5)
+
+#mostra os nomes das colunas
+base.columns
+
+#mostra a quantidade de linhas e colunas
+base.shape
+
+#descrição
+sinasc_ac2017.describe()
+
+------------------------------------------
+
+# média
+media_1 = normal['IDADEMAE'].mean()
+media_2 = cesarea['IDADEMAE'].mean()
+
+# desvio médio
+dm_1 = normal['IDADEMAE'].mad()
+dm_2 = cesarea['IDADEMAE'].mad()
+ 
+# variância
+var_1 = normal['IDADEMAE'].var()
+var_2 = cesarea['IDADEMAE'].var()
+
+# desvio padrão
+dp_1 = normal['IDADEMAE'].std()
+dp_2 = cesarea['IDADEMAE'].std()
+
+# amplitude interquartil
+q_1 = normal['IDADEMAE'].quantile([0.25, 0.75]).values
+q_2 = cesarea['IDADEMAE'].quantile([0.25, 0.75]).values
+iqr_1 = q_1[1] - q_1[0]
+iqr_2 = q_2[1] - q_2[0]
+
+# coeficiente de variação
+cv_1 = dp_1*100/media_1
+cv_2 = dp_2*100/media_2
+
+---------------------------
+
+#Verificando dados nulos ou ausentes
+base.isnull().sum()
+
+#Tirando Dados Nulos
+
+#Limpando dados nulos:
+#axis: Se for 0 serão ‘dropadas’ as linhas que contem os dados faltantes, 
+#caso 1 remove a coluna inteira que tem dados faltantes;
+#how: Determina se a coluna vai ser removida do DataFrame, se passarmos ‘any’ 
+#como valor do parâmetro se tiver apenas um valor faltante que seja a coluna é removida, 
+#se passarmos ‘all’ precisamos que todos os valores sejam faltantes/nulos para que a coluna seja removida;
+limpa=base.dropna(axis=1,how='any')
+limpa
+
+#usando o and
+#Filtrando dados por valor de colunas.
+#Por exemplo mães viúvas e que nasceram em hospital
+sinasc_ac2017[(sinasc_ac2017['ESTCIVMAE'] == '3') & (sinasc_ac2017['LOCNASC'] == '1')]
+
+-----------------------------------------
+
+#GRAFICOS GRAFICOS
+
+#@title **Histograma de idade das mães de nascidos vivos em 2017 no Acre**
+hist = sinasc_ac2017.hist(column='IDADEMAE', bins=len(sinasc_ac2017.IDADEMAE.unique()), grid=False, figsize=(12,8), color='#86bf91', zorder=2, rwidth=0.9)
+
+#@title **Gráfico de dispersão idade x quantidade de filhos vivos** { vertical-output: true, form-width: "60%" }
+disp = idade_filhosvivos.plot(x='IDADEMAE', y='QTDFILVIVO',  kind='scatter', figsize=(15,8), s=300)
+r = disp.set(xlabel='Idade', ylabel='Qtd. Filhos Vivos')
+
+#Gráfico de dispersão com a biblioteca seaborn
+plt.figure(figsize=(15, 8))
+sns.scatterplot(data=idade_filhosvivos, x="IDADEMAE", y="QTDFILVIVO", s=300)
+plt.title('Gráfico de dispersão idade x quantidade de filhos vivos')
+plt.xlabel('Idade')
+plt.ylabel('Qtd. Filhos Vivos')
+plt.show()
+
+#@title **Gráfico de dispersão qtd. filhos vivos x qtd. de filhos mortos** { vertical-output: true, form-width: "60%" }
+disp = filhos.plot.scatter(
+    x='QTDFILVIVO', 
+    y='QTDFILMORT', 
+    figsize=(15,8), 
+    s=300
+)
+r = disp.set(xlabel='Qtd. Filhos Vivos', ylabel='Qtd. Filhos Mortos')
